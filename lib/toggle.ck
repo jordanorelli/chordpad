@@ -1,7 +1,6 @@
-fun void setTones(float tonic, int intervals[], SinOsc @ _ugens[])
+// fun void setTones(float tonic, int intervals[], SinOsc @ _ugens[])
+fun void setTones(SinOsc @ _ugens[], float tones[])
 {
-    Chord chord;
-    chord.set(tonic, intervals) @=> float tones[];
     for(0 => int i; i < _ugens.size(); i++)
     {
         if(tones.size() > i)
@@ -32,6 +31,9 @@ ToggleBox inversionSelect;
 inversionSelect.init(lp, 4, 2, 4, 1, LaunchpadColor.yellow, 0);
 ToggleBox octaveSelect;
 octaveSelect.init(lp, 0, 3, 8, 1, LaunchpadColor.orange, 0);
+
+Chord chord;
+chord.set(baseFreq, ChordQuality.M);
 SinOsc @ ugens[4];
 for(0 => int i; i < ugens.size(); i++)
 {
@@ -39,7 +41,6 @@ for(0 => int i; i < ugens.size(); i++)
     0 => s.op;
     s => dac;
     s @=> ugens[i];
-
 }
 
 fun void tonicSelectHandler(BoxEvent e)
@@ -49,17 +50,35 @@ fun void tonicSelectHandler(BoxEvent e)
         e => now;
         if(e.velocity == 127)
         {
-            chout <= tones[e.column][e.row] <= IO.newline();
-            chout <= ChordQuality.M.toString() <= IO.newline();
-            chout <= "foo" <= IO.newline();
-            chout <= ugens.toString() <= IO.newline();
-            chout <= "bar" <= IO.newline();
-            setTones(tones[e.column][e.row], ChordQuality.M, ugens);
+            chord.setTonic(tones[e.column][e.row]);
+            setTones(ugens, chord.tones);
+        }
+    }
+}
+
+fun void qualitySelectHandler(BoxEvent e)
+{
+    [[ChordQuality.m, ChordQuality.dim, ChordQuality.m7b5, ChordQuality.m7],
+     [ChordQuality.M, ChordQuality.aug3, ChordQuality.dom7, ChordQuality.M7]]
+     @=> int qualityMap[][][];
+
+    chout <= qualityMap.size() <= IO.newline();
+    chout <= qualityMap[0].size() <= IO.newline();
+    chout <= qualityMap[0][0].size() <= IO.newline();
+    while(true)
+    {
+        e => now;
+        if(e.velocity == 127)
+        {
+            chout <= e.column <= "\t" <= e.row <= IO.newline();
+            chord.setQuality(qualityMap[e.row][e.column]);
+            setTones(ugens, chord.tones);
         }
     }
 }
 
 spork ~ tonicSelectHandler(tonicSelect.e);
+spork ~ qualitySelectHandler(qualitySelect.e);
 while(true)
 {
     100::ms => now;
