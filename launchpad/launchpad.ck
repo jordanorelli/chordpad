@@ -62,7 +62,7 @@ public class Launchpad
             in => now;
             while(in.recv(m)) {
                 LaunchpadEvent.fromMidi(m).copyInto(e);
-                e.signal();
+                e.broadcast();
                 me.yield();
             }
         }

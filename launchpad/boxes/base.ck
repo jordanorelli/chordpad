@@ -22,6 +22,7 @@ THE SOFTWARE.
 public class Box
 {
     Launchpad lp;
+    BoxEvent e;
     int x;
     int y;
     int width;
@@ -54,15 +55,15 @@ public class Box
             cherr <= "Warning: negative height seen in Box.init.  Forcing a "
                   <= "safe value of 0." <= IO.newline();
         }
-        if (_x + _width > 7)
+        if (_x + _width > 8)
         {
-            7 - _x => _width;
+            8 - _x => _width;
             cherr <= "Warning: declared dimensions in Box.init are too wide. "
                   <= "Forcing a safe width value of " <= _width <= IO.newline();
         }
-        if(_y + height > 7)
+        if(_y + height > 8)
         {
-            7 - _y => height;
+            8 - _y => height;
             cherr <= "Warning: declared dimensions in Box.init are too tall. "
                   <= "Forcing a safe height value of " <= _height <= IO.newline();
         }
@@ -93,5 +94,7 @@ public class Box
     {
         chout <= "Box handle " <= column <= " " <= row <= " " <= velocity
               <= IO.newline();
+        e.set(column, row, velocity);
+        e.broadcast();
     }
 }

@@ -21,6 +21,11 @@ THE SOFTWARE.
 */
 public class ToneCalc
 {
+    fun static float step(float octaveSteps)
+    {
+        return Math.pow(2, 1.0/ octaveSteps $ float);
+    }
+
     // generates a one-dimensional array of even-tempered frequency values.
     fun static float[] row(int size, int cellStep, float baseFreq,
                            float octaveSteps)
